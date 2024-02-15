@@ -1,23 +1,5 @@
 <!-- login.php -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="login.css">
-</head>
-<body>
-    <h2>Login</h2>
-    <form action="login.php" method="post">
-        <label for="login">Email :</label><br>
-        <input type="text" id="login" name="login"><br>
-        <label for="password">Mot de Passe :</label><br>
-        <input type="password" id="password" name="password"><br>
-        <input type="submit" value="Submit">
-    </form>
-
-    <?php
+<?php
 // Vérifier si le formulaire a été soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Récupérer les données du formulaire
@@ -39,13 +21,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Préparer et exécuter la requête SQL pour vérifier les informations de connexion
 
-    $sql = "SELECT id FROM utilisateurs WHERE email = '$email' AND mdp = '$mdp'";
+    #$sql = "SELECT id FROM utilisateurs WHERE email = '$email' AND mdp = '$mdp'";
+    $sql = "SELECT id, mdp FROM utilisateurs WHERE email = '$email'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         // Les informations de connexion sont correctes
         // Récupérer l'id_utilisateur correspondant
         $row = $result->fetch_assoc();
+        $hashed_password = $row["mdp"];
+
+        if (password_verify($mdp, $hashed_password)) {
         $id_utilisateur = $row["id"];
 
         // Exécuter le script Python avec l'id_utilisateur
@@ -104,15 +90,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </script>
             <?php
          }
-    } else {
+    }else{
         // Afficher un message d'erreur
-        echo "<span class='error-message'>Identifiants incorrects.</span>";
-    }
-
-    // Fermer la connexion à la base de données
-    $conn->close();
+        echo "<span class='error-message'>Mot de passe incorrect.</span>";
+}
+}else{
+    // Afficher un message d'erreur
+    echo "<span class='error-message'>Identifiants incorrects.</span>";
+}
+// Fermer la connexion à la base de données
+$conn->close();
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <h2>Login</h2>
+    <form action="login.php" method="post">
+        <label for="login">Email :</label><br>
+        <input type="text" id="login" name="login"><br>
+        <label for="password">Mot de Passe :</label><br>
+        <input type="password" id="password" name="password"><br>
+        <input type="submit" value="Submit">
+    </form>
 
 </body>
 </html>

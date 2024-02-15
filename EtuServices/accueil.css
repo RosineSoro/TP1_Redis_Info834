@@ -56,3 +56,11 @@ a:hover {
 h1, h2 {
     text-align: center;
 }
+
+.confirmation {
+    color: green;
+}
+
+.erreur {
+    color: red;
+}
